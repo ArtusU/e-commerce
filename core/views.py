@@ -1,12 +1,14 @@
-from django.conf import settings                                                    
+from django.conf import settings 
+from django.contrib.auth.mixins import LoginRequiredMixin                                                   
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.shortcuts import render, reverse
 from django.views import generic
+from cart.models import Order
 from .forms import ContactForm
 
 
-
+    
 class HomeView(generic.TemplateView):
     template_name = 'index.html'
 
