@@ -2,11 +2,12 @@ import datetime
 import json
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, reverse, redirect
 from django.views import generic
 from .forms import AddToCartForm, AddressForm
-from .models import Product, OrderItem, Address, Payment
+from .models import Product, OrderItem, Address, Payment, Order
 from .utils import get_or_set_order_session
 
 class ProductListView(generic.ListView):
@@ -94,7 +95,6 @@ class RemoveFromCartView(generic.View):
         return redirect("cart:summary")
 
 
-
 class CheckoutView(generic.FormView):
     template_name = 'cart/checkout.html'
     form_class = AddressForm
@@ -148,7 +148,6 @@ class CheckoutView(generic.FormView):
         return context
         
 
-
 class PaymentView(generic.TemplateView):
     template_name = 'cart/payment.html'
 
@@ -179,3 +178,9 @@ class ConfirmOrderView(generic.View):
 
 class ThankYouView(generic.TemplateView):
     template_name = 'cart/thanks.html'
+
+
+class OrderDetailView(LoginRequiredMixin, generic.DetailView):
+    template_name = 'order.html'
+    queryset = Order.objects.all()
+    context_object_name = 'order'
