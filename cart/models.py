@@ -8,7 +8,7 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name                = models.CharField(max_length=100)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -24,13 +24,13 @@ class Address(models.Model):
         ('S', 'Shipping'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    address_line_1 = models.CharField(max_length=150)
-    address_line_2 = models.CharField(max_length=150)
-    city = models.CharField(max_length=100)
-    postcode = models.CharField(max_length=20)
-    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
-    default = models.BooleanField(default=False)
+    user                = models.ForeignKey(User, on_delete=models.CASCADE)
+    address_line_1      = models.CharField(max_length=150)
+    address_line_2      = models.CharField(max_length=150)
+    city                = models.CharField(max_length=100)
+    postcode            = models.CharField(max_length=20)
+    address_type        = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    default             = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.address_line_1}, {self.address_line_2}, {self.city}, {self.postcode}"
@@ -40,32 +40,32 @@ class Address(models.Model):
         verbose_name_plural = 'Addresses'
 
 class ColourVariation(models.Model):
-    name = models.CharField(max_length=50)
+    name                = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
 
 class SizeVariation(models.Model):
-    name = models.CharField(max_length=50)
+    name                = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
 
 class Product(models.Model):
-    title = models.CharField(max_length=150)
-    slug = models.SlugField(unique=True)
-    image = models.ImageField(upload_to='product_images')
-    description = models.TextField()
-    price= models.IntegerField(default=0)
-    created = models.DateTimeField(auto_now_add=True)
-    updated = models.DateTimeField(auto_now=True)
-    active = models.BooleanField(default=False)
-    available_colours = models.ManyToManyField(ColourVariation)
-    available_sizes = models.ManyToManyField(SizeVariation)
-    primary_category = models.ForeignKey(Category, related_name='primary_products', on_delete=models.CASCADE)
+    title               = models.CharField(max_length=150)
+    slug                = models.SlugField(unique=True)
+    image               = models.ImageField(upload_to='product_images')
+    description         = models.TextField()
+    price               = models.IntegerField(default=0)
+    created             = models.DateTimeField(auto_now_add=True)
+    updated             = models.DateTimeField(auto_now=True)
+    active              = models.BooleanField(default=False)
+    available_colours   = models.ManyToManyField(ColourVariation)
+    available_sizes     = models.ManyToManyField(SizeVariation)
+    primary_category    = models.ForeignKey(Category, related_name='primary_products', on_delete=models.CASCADE)
     secondary_categories = models.ManyToManyField(Category, blank=True)
-    stock = models.IntegerField(default=0)
+    stock               = models.IntegerField(default=0)
 
 
 
@@ -91,11 +91,11 @@ class Product(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey("Order", related_name='items', on_delete=models.CASCADE )
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    colour = models.ForeignKey(ColourVariation, on_delete=models.CASCADE)
-    size = models.ForeignKey(SizeVariation, on_delete=models.CASCADE)
+    order               = models.ForeignKey("Order", related_name='items', on_delete=models.CASCADE )
+    product             = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity            = models.PositiveIntegerField(default=1)
+    colour              = models.ForeignKey(ColourVariation, on_delete=models.CASCADE)
+    size                = models.ForeignKey(SizeVariation, on_delete=models.CASCADE)
 
 
     def __str__(self):
@@ -110,14 +110,12 @@ class OrderItem(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
-    start_date = models.DateTimeField(auto_now_add=True)
-    ordered_date = models.DateTimeField(blank=True, null=True)
-    ordered = models.BooleanField(default=False)
-    billing_address = models.ForeignKey(
-        Address, related_name='billing_address', blank=True, null=True, on_delete=models.SET_NULL)
-    shipping_address = models.ForeignKey(
-        Address, related_name='shipping_address', blank=True, null=True, on_delete=models.SET_NULL)
+    user                = models.ForeignKey(User, blank=True, null=True, on_delete=models.CASCADE)
+    start_date          = models.DateTimeField(auto_now_add=True)
+    ordered_date        = models.DateTimeField(blank=True, null=True)
+    ordered             = models.BooleanField(default=False)
+    billing_address     = models.ForeignKey(Address, related_name='billing_address', blank=True, null=True, on_delete=models.SET_NULL)
+    shipping_address    = models.ForeignKey(Address, related_name='shipping_address', blank=True, null=True, on_delete=models.SET_NULL)
 
 
     def __str__(self):
@@ -150,14 +148,13 @@ class Order(models.Model):
 
 
 class Payment(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments')
-    payment_method = models.CharField(max_length=20, choices=(
-        ('PayPal', 'PayPal'),
-    ))
-    time_stamp = models.DateTimeField(auto_now_add=True)
-    successful = models.BooleanField(default=False)
-    amount = models.FloatField()
-    raw_response = models.TextField()
+    order               = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='payments')
+    payment_method      = models.CharField(max_length=20, choices=(('PayPal', 'PayPal'),))
+    time_stamp          = models.DateTimeField(auto_now_add=True)
+    successful          = models.BooleanField(default=False)
+    amount              = models.FloatField()
+    raw_response        = models.TextField()
+    payment_intent_id   = models.CharField(max_length=100)
 
     def __str__(self):
         return self.reference_number
@@ -171,5 +168,29 @@ class Payment(models.Model):
 def pre_save_product_receiver(sender, instance, *args, **kwargs):
     if not instance.slug:
         instance.slug = slugify(instance.title)
+
+pre_save.connect(pre_save_product_receiver, sender=Product)
+
+
+
+class StripePayment(models.Model):
+    order               = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='stripe_payments')
+    payment_intent_id   = models.CharField(max_length=100)
+    timestamp           = models.DateTimeField(auto_now_add=True)
+    successful          = models.BooleanField(default=False)
+    amount              = models.FloatField(default=0)
+
+    def __str__(self):
+        return self.reference_number
+
+    @property
+    def reference_number(self):
+        return f"STRIPE-PAYMENT-{self.order}-{self.pk}"
+
+
+def pre_save_product_receiver(sender, instance, *args, **kwargs):
+    if not instance.slug:
+        instance.slug = slugify(instance.title)
+
 
 pre_save.connect(pre_save_product_receiver, sender=Product)
